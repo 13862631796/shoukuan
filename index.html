@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>伊之诺百货经营部 · 收款</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>¥</text></svg>">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    background: #f5f6f8;
+    color: #222;
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 24px;
+    text-align: center;
+  }
+  .spinner {
+    width: 36px; height: 36px;
+    border: 3px solid #e0e0e0;
+    border-top-color: #1677ff;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin-bottom: 20px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  h1 { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+  p  { font-size: 14px; color: #888; line-height: 1.6; }
+
+  /* 兜底：既不是微信也不是支付宝时显示两个按钮 */
+  .fallback { display: none; width: 100%; max-width: 360px; }
+  .fallback h1 { margin-top: 0; }
+  .btn {
+    display: block;
+    width: 100%;
+    padding: 16px;
+    border-radius: 12px;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 600;
+    text-decoration: none;
+    margin-top: 14px;
+  }
+  .btn-wechat { background: #07C160; }
+  .btn-alipay { background: #1677FF; }
+</style>
+</head>
+<body>
+
+  <!-- 自动跳转中的 loading -->
+  <div id="loading">
+    <div class="spinner"></div>
+    <h1>正在打开付款页面…</h1>
+    <p id="loadingTip">请稍候</p>
+  </div>
+
+  <!-- 兜底：普通浏览器打开时显示手动选择 -->
+  <div class="fallback" id="fallback">
+    <h1>伊之诺百货经营部</h1>
+    <p style="margin-bottom:18px">请选择付款方式</p>
+    <a class="btn btn-wechat" href="https://payapp.wechatpay.cn/sjt/qr/AQE_MckpeyBOr2r4MWSrDasv">微信支付</a>
+    <a class="btn btn-alipay" href="https://qr.alipay.com/fkx155632r6f3nxrawvd369">支付宝付款</a>
+    <p style="margin-top:24px;font-size:12px">提示：微信/支付宝直接扫码本入口码可自动跳转</p>
+  </div>
+
+<script>
+  var WECHAT_URL  = "https://payapp.wechatpay.cn/sjt/qr/AQE_MckpeyBOr2r4MWSrDasv";
+  var ALIPAY_URL  = "https://qr.alipay.com/fkx155632r6f3nxrawvd369";
+
+  var ua = navigator.userAgent.toLowerCase();
+  var isWechat = ua.indexOf("micromessenger") > -1;
+  var isAlipay = ua.indexOf("alipayclient") > -1;
+
+  if (isWechat) {
+    document.getElementById("loadingTip").textContent = "正在拉起微信支付…";
+    // 给页面一点渲染时间，避免白屏瞬间跳转
+    setTimeout(function(){ location.replace(WECHAT_URL); }, 300);
+  } else if (isAlipay) {
+    document.getElementById("loadingTip").textContent = "正在拉起支付宝…";
+    setTimeout(function(){ location.replace(ALIPAY_URL); }, 300);
+  } else {
+    // 普通浏览器：显示手动选择按钮
+    document.getElementById("loading").style.display = "none";
+    document.getElementById("fallback").style.display = "block";
+  }
+</script>
+</body>
+</html>
